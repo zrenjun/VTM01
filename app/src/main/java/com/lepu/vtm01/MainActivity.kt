@@ -1,5 +1,6 @@
 package com.lepu.vtm01
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.TextView
@@ -12,6 +13,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private var connected = false
     private lateinit var viewModel: MainViewModel
 
+    @SuppressLint("SetTextI18n")
     @OptIn(ExperimentalStdlibApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,26 +34,95 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             connected = true
             findViewById<TextView>(R.id.tv0).text = getString(R.string.connected)
         }
+        val et = findViewById<EditText>(R.id.et)
         viewModel.usbOperationRead.observe(this) {
             LogUtil.e(it.toHexString())
-            findViewById<EditText>(R.id.et).setText(it.toHexString())
+            et.setText("${et.text}${it.toHexString()}")
         }
 
         findViewById<TextView>(R.id.tv0).setOnClickListener {
             viewModel.connect()
         }
+        val end = ByteArray(56)
+        for (i in 0..54) {
+            end[i] = 0x00.toByte()
+        }
         findViewById<TextView>(R.id.tv1).setOnClickListener {
             if (connected) {
-                val end = ByteArray(56)
-                for (i in 0..54) {
-                    end[i] = 0x00.toByte()
-                }
                 viewModel.setCmd(
                     byteArrayOf(
                         0x08.toByte(),
                         0xA5.toByte(),
                         0xE1.toByte(),
                         0x1E.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x69.toByte()
+                    ) + end
+                )
+            }
+        }
+        findViewById<TextView>(R.id.tv2).setOnClickListener {
+            if (connected) {
+                viewModel.setCmd(
+                    byteArrayOf(
+                        0x08.toByte(),
+                        0xA5.toByte(),
+                        0xE2.toByte(),
+                        0x2E.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x69.toByte()
+                    ) + end
+                )
+            }
+        }
+        findViewById<TextView>(R.id.tv3).setOnClickListener {
+            if (connected) {
+                viewModel.setCmd(
+                    byteArrayOf(
+                        0x08.toByte(),
+                        0xA5.toByte(),
+                        0xE3.toByte(),
+                        0x3E.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x69.toByte()
+                    ) + end
+                )
+            }
+        }
+        findViewById<TextView>(R.id.tv3).setOnClickListener {
+            if (connected) {
+                viewModel.setCmd(
+                    byteArrayOf(
+                        0x08.toByte(),
+                        0xA5.toByte(),
+                        0x01.toByte(),
+                        0x10.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x69.toByte()
+                    ) + end
+                )
+            }
+        }
+        findViewById<TextView>(R.id.tv4).setOnClickListener {
+            if (connected) {
+                viewModel.setCmd(
+                    byteArrayOf(
+                        0x08.toByte(),
+                        0xA5.toByte(),
+                        0x02.toByte(),
+                        0x20.toByte(),
                         0x00.toByte(),
                         0x00.toByte(),
                         0x00.toByte(),

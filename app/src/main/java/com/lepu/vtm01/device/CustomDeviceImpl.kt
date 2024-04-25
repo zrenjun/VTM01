@@ -25,7 +25,5 @@ class CustomDeviceImpl(private val usbHelper: UsbHelper) : CustomDevice {
 
     override fun setCmd(byteArray: ByteArray) = usbHelper.write(byteArray)
 
-    override fun receive(): Observable<Result<Error, ByteArray>> {
-        return Observable.fromCallable { usbHelper.read() }.subscribeOn(Schedulers.io())
-    }
+    override fun receive(): Result<Error, ByteArray> = usbHelper.read()
 }

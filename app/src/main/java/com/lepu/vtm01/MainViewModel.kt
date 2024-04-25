@@ -11,6 +11,8 @@ import com.lepu.vtm01.type.Error
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -42,23 +44,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun handleCmd(success: Empty) {
-        LogUtil.e( "success")
         usbOperationSuccess.postValue(success)
     }
 
-    private val disposable = CompositeDisposable()
+
+    private var ticker: ReceiveChannel<Unit>? = null
+    init {
+        ticker = ticker( 100L, 0)
+    }
     private fun handleConnect(success: Empty) {
-        disposable.add(
-            customDevice.receive()
-                .observeOn(Schedulers.computation())
-                .repeat()
-                .subscribe({
-                    it.handle(::handleError, ::handleRead)
-                }, {
-                    it.printStackTrace()
-                    usbOperationError.postValue(Error.ReadError)
-                })
-        )
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                for (event in ticker!!) {
+                    customDevice.receive().handle(::handleError, ::handleRead)
+                }
+            }
+        }
         usbOperationSuccess.postValue(success)
     }
 
@@ -71,6 +72,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         customDevice.disconnect()
-        disposable.clear()
+        ticker?.cancel()
     }
 }

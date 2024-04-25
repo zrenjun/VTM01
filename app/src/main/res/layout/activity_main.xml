@@ -110,12 +110,22 @@
     <EditText
         android:id="@+id/et"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_margin="16dp"
+        android:layout_height="200dp"
+        android:layout_margin="10dp"
         android:textColor="@color/black"
         android:background="@drawable/com_shape_gray_light_10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv8" />
+
+    <EditText
+        android:id="@+id/et_parse"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_margin="10dp"
+        android:textColor="@color/black"
+        android:background="@drawable/com_shape_gray_light_10"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

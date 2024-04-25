@@ -15,5 +15,5 @@ interface CustomDevice {
 
     fun setCmd(byteArray: ByteArray): Result<Error, Empty>
 
-    fun receive(): Observable<Result<Error, ByteArray>>
+    fun receive(): Result<Error, ByteArray>
 }
