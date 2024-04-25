@@ -3,12 +3,16 @@ package com.lepu.vtm01
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lepu.vtm01.device.CustomDeviceImpl
 import com.lepu.vtm01.hardware.UsbHelperImpl
 import com.lepu.vtm01.type.Empty
 import com.lepu.vtm01.type.Error
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -17,9 +21,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val usbOperationSuccess = MutableLiveData<Empty>()
     val usbOperationRead = MutableLiveData<ByteArray>()
 
-
     fun setCmd(byteArray: ByteArray) {
-        customDevice.setCmd(byteArray).handle(::handleError, ::handleCmd)
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                customDevice.setCmd(byteArray).handle(::handleError, ::handleCmd)
+            }
+        }
     }
 
     fun connect() {
@@ -34,12 +41,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         usbOperationError.postValue(error)
     }
 
-    private fun handleCmd(success: Empty){
+    private fun handleCmd(success: Empty) {
+        LogUtil.e( "success")
         usbOperationSuccess.postValue(success)
     }
 
     private val disposable = CompositeDisposable()
-    private fun handleConnect(success: Empty){
+    private fun handleConnect(success: Empty) {
         disposable.add(
             customDevice.receive()
                 .observeOn(Schedulers.computation())
@@ -47,14 +55,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .subscribe({
                     it.handle(::handleError, ::handleRead)
                 }, {
+                    it.printStackTrace()
                     usbOperationError.postValue(Error.ReadError)
                 })
         )
         usbOperationSuccess.postValue(success)
     }
 
-    private fun handleRead(byteArray: ByteArray){
-        usbOperationRead.postValue(byteArray)
+    private fun handleRead(byteArray: ByteArray) {
+        if (byteArray[0] != 0x00.toByte()) {
+            usbOperationRead.postValue(byteArray)
+        }
     }
 
     override fun onCleared() {

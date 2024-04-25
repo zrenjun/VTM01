@@ -11,13 +11,11 @@ class CustomDeviceImpl(private val usbHelper: UsbHelper) : CustomDevice {
 
     companion object {
         const val VENDOR_ID = 0x1915
-        const val PRODUCT_ID = 0xF34E
-        const val CUSTOM_HID_INTERFACE = 0x00
-        const val READ_SIZE = 64
+        const val PRODUCT_ID = 0xF33F
     }
 
     override fun connect(): Result<Error, Empty> =
-        usbHelper.enumerate(VENDOR_ID, PRODUCT_ID, CUSTOM_HID_INTERFACE)
+        usbHelper.enumerate(VENDOR_ID, PRODUCT_ID)
 
     override fun disconnect() {
         usbHelper.close()
@@ -28,6 +26,6 @@ class CustomDeviceImpl(private val usbHelper: UsbHelper) : CustomDevice {
     override fun setCmd(byteArray: ByteArray) = usbHelper.write(byteArray)
 
     override fun receive(): Observable<Result<Error, ByteArray>> {
-        return Observable.fromCallable { usbHelper.read(READ_SIZE) }.subscribeOn(Schedulers.io())
+        return Observable.fromCallable { usbHelper.read() }.subscribeOn(Schedulers.io())
     }
 }

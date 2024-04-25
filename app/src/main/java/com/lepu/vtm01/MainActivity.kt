@@ -42,20 +42,29 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
         findViewById<TextView>(R.id.tv1).setOnClickListener {
             if (connected) {
-                viewModel.setCmd(byteArrayOf(
-                    0xA5.toByte(),
-                    0xE1.toByte(),
-                    0x00.toByte(),
-                    0x00.toByte(),
-                    0x00.toByte(),
-                    0x00.toByte()
-                ).getCRC())
+                val end = ByteArray(56)
+                for (i in 0..54) {
+                    end[i] = 0x00.toByte()
+                }
+                viewModel.setCmd(
+                    byteArrayOf(
+                        0x08.toByte(),
+                        0xA5.toByte(),
+                        0xE1.toByte(),
+                        0x1E.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x00.toByte(),
+                        0x69.toByte()
+                    ) + end
+                )
             }
         }
     }
 
 
-    private fun showMessage(message: String){
+    private fun showMessage(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
