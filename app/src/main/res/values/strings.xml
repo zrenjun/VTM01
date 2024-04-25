@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">VTM01</string>
+    <string name="connection_state_success">Connection success</string>
+    <string name="connection_state_failure">Connection failure</string>
+
+    <string name="error_no_device">No device find error</string>
+    <string name="error_no_connection">Connection error</string>
+    <string name="error_claim_interface">Interface not available</string>
+    <string name="error_read_report">Read report error</string>
+
+    <string name="connected">Device connected</string>
+    <string name="disconnected">Device disconnected</string>
+    <string name="not_found">Device not found</string>
+    <string name="permission_denied">Permission denied by user</string>
+</resources>
