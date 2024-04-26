@@ -16,6 +16,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = File("F:\\VTM01\\app\\key.jks")
+            storePassword = "123456"
+            keyAlias = "key0"
+            keyPassword = "123456"
+        }
     }
 
     buildTypes {
@@ -25,6 +35,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -62,8 +73,4 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.reactivex.rxjava)
-    implementation(libs.reactivex.rxandroid)
-
-
 }

@@ -4,8 +4,6 @@ import com.lepu.vtm01.hardware.UsbHelper
 import com.lepu.vtm01.type.Empty
 import com.lepu.vtm01.type.Result
 import com.lepu.vtm01.type.Error
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 
 class CustomDeviceImpl(private val usbHelper: UsbHelper) : CustomDevice {
 

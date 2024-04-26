@@ -8,8 +8,6 @@ import com.lepu.vtm01.device.CustomDeviceImpl
 import com.lepu.vtm01.hardware.UsbHelperImpl
 import com.lepu.vtm01.type.Empty
 import com.lepu.vtm01.type.Error
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.ticker

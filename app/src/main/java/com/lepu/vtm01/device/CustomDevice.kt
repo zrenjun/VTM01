@@ -3,7 +3,6 @@ package com.lepu.vtm01.device
 import com.lepu.vtm01.type.Empty
 import com.lepu.vtm01.type.Result
 import com.lepu.vtm01.type.Error
-import io.reactivex.Observable
 
 interface CustomDevice {
 

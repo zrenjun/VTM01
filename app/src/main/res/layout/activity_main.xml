@@ -30,39 +30,6 @@
         app:layout_constraintTop_toBottomOf="@id/tv0"
         tools:ignore="HardcodedText" />
 
-<!--    <TextView-->
-<!--        android:id="@+id/tv2"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:text="复位"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tv1"-->
-<!--        tools:ignore="HardcodedText" />-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/tv3"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:text="恢复出厂设置"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tv2"-->
-<!--        tools:ignore="HardcodedText" />-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/tv4"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:text="获取配置参数"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tv3"-->
-<!--        tools:ignore="HardcodedText" />-->
-
     <TextView
         android:id="@+id/tv5"
         android:layout_width="wrap_content"
@@ -74,38 +41,6 @@
         app:layout_constraintTop_toBottomOf="@id/tv1"
         tools:ignore="HardcodedText" />
 
-<!--    <TextView-->
-<!--        android:id="@+id/tv6"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:text="获取原始数据"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tv5"-->
-<!--        tools:ignore="HardcodedText" />-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/tv7"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:text="进入休眠模式"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tv6"-->
-<!--        tools:ignore="HardcodedText" />-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/tv8"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:text="退出休眠模式"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tv7"-->
-<!--        tools:ignore="HardcodedText" />-->
 
     <EditText
         android:id="@+id/et"

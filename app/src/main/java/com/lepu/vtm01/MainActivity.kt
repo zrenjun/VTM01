@@ -107,39 +107,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 )
             }
         }
-//        //复位
-//        findViewById<TextView>(R.id.tv2).setOnClickListener {
-//            if (connected) {
-//                viewModel.setCmd(
-//                    byteArrayOf(
-//                        0x08.toByte(), 0xA5.toByte(), 0xE2.toByte(), 0x2E.toByte(), 0x00.toByte(),
-//                        getPkgNo().toByte(), 0x00.toByte(), 0x00.toByte()
-//                    ).getCRC() + end
-//                )
-//            }
-//        }
-//        //恢复出厂设置
-//        findViewById<TextView>(R.id.tv3).setOnClickListener {
-//            if (connected) {
-//                viewModel.setCmd(
-//                    byteArrayOf(
-//                        0x08.toByte(), 0xA5.toByte(), 0xE3.toByte(), 0x3E.toByte(), 0x00.toByte(),
-//                        getPkgNo().toByte(), 0x00.toByte(), 0x00.toByte()
-//                    ).getCRC() + end
-//                )
-//            }
-//        }
-//        //获取配置参数
-//        findViewById<TextView>(R.id.tv4).setOnClickListener {
-//            if (connected) {
-//                viewModel.setCmd(
-//                    byteArrayOf(
-//                        0x08.toByte(), 0xA5.toByte(), 0x01.toByte(), 0x10.toByte(), 0x00.toByte(),
-//                        getPkgNo().toByte(), 0x00.toByte(), 0x00.toByte()
-//                    ).getCRC() + end
-//                )
-//            }
-//        }
         //获取实时数据
         val tv5 = findViewById<TextView>(R.id.tv5)
         tv5.setOnClickListener {
@@ -172,41 +139,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 getRealData()
             }
         }
-//        //获取原始数据
-//        findViewById<TextView>(R.id.tv6).setOnClickListener {
-//            if (connected) {
-//                viewModel.setCmd(
-//                    byteArrayOf(
-//                        0x08.toByte(), 0xA5.toByte(), 0x03.toByte(), 0x30.toByte(), 0x00.toByte(),
-//                        getPkgNo().toByte(), 0x00.toByte(), 0x00.toByte()
-//                    ).getCRC() + end
-//                )
-//            }
-//        }
-//        //进入休眠模式
-//        findViewById<TextView>(R.id.tv6).setOnClickListener {
-//            if (connected) {
-//                viewModel.setCmd(
-//                    byteArrayOf(
-//                        0x08.toByte(), 0xA5.toByte(), 0x04.toByte(), 0x40.toByte(), 0x00.toByte(),
-//                        getPkgNo().toByte(), 0x00.toByte(), 0x00.toByte()
-//                    ).getCRC() + end
-//                )
-//            }
-//        }
-//        //退出休眠模式
-//        findViewById<TextView>(R.id.tv6).setOnClickListener {
-//            if (connected) {
-//                viewModel.setCmd(
-//                    byteArrayOf(
-//                        0x08.toByte(), 0xA5.toByte(), 0x05.toByte(), 0x50.toByte(), 0x00.toByte(),
-//                        getPkgNo().toByte(), 0x00.toByte(), 0x00.toByte()
-//                    ).getCRC() + end
-//                )
-//            }
-//        }
-
-
     }
 
     private fun showMessage(message: String) {
