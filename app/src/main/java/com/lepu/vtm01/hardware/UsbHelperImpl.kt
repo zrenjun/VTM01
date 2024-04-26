@@ -46,11 +46,10 @@ class UsbHelperImpl(context: Context) : UsbHelper {
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun write(report: ByteArray): Result<Error, Empty> {
-        LogUtil.e(report.toHexString())
+        LogUtil.e(report.copyOfRange(0, 9).toHexString())
         //如果是HID的设备类请求，只有10100001(0xA1)和00100001(0x21)两种
         val result =
             usbConnection?.controlTransfer(0x21, 0x09, 0x0200, 0, report, 64, 3000)
-        LogUtil.e(result.toString())
         if (result == null || result < 0)
             return Result.Failure(Error.UsbConnectionError)
         return Result.Success(Empty())

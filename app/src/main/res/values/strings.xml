@@ -12,4 +12,10 @@
     <string name="disconnected">Device disconnected</string>
     <string name="not_found">Device not found</string>
     <string name="permission_denied">Permission denied by user</string>
+    <string name="time">Time</string>
+    <string name="Oxygen_Level">Oxygen_Level</string>
+    <string name="Pulse_Rate">Pulse_Rate</string>
+    <string name="Pi">Pi</string>
+    <string name="Status">Status</string>
+    <string name="share">Share</string>
 </resources>

@@ -50,7 +50,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private var ticker: ReceiveChannel<Unit>? = null
     init {
-        ticker = ticker( 100L, 0)
+        ticker = ticker( 10L, 0)
     }
     private fun handleConnect(success: Empty) {
         viewModelScope.launch {
