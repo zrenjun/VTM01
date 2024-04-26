@@ -55,13 +55,12 @@ class UsbHelperImpl(context: Context) : UsbHelper {
         return Result.Success(Empty())
     }
 
-    @Suppress("DEPRECATION")
     override fun read(): Result<Error, ByteArray> {
         val buffer = ByteBuffer.allocate(64)
         val report = ByteArray(64)
         usbConnection?.let {
-            if (inRequest.queue(buffer, 64)) {
-                usbConnection?.requestWait()
+            if (inRequest.queue(buffer)) {
+                it.requestWait()
                 buffer.rewind()
                 buffer.get(report, 0, report.size)
                 buffer.clear()

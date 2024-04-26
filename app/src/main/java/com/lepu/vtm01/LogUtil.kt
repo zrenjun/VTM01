@@ -15,9 +15,9 @@ import java.util.*
  * Created by zrj 2017/6/10.
  */
 object LogUtil {
-    private var logEnabled = true
+    private var logEnabled = false
     private var tag = "zrj"
-    private var isSaveLog = true
+    private var isSaveLog = false
     var pathLogOther = "${Environment.getExternalStorageDirectory().path}/zrj/other"
     var pathLogNet = "${Environment.getExternalStorageDirectory().path}/zrj/net"
 

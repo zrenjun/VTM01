@@ -44,10 +44,19 @@ import java.util.Locale
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private var connected = false
     private lateinit var viewModel: MainViewModel
-    private val end = ByteArray(56)
+    private val end = ByteArray(55)
     private var pkgNo = 0
     private var etParse: EditText? = null
     private val recordList = ArrayList<ArrayList<String>>()
+    override fun onResume() {
+        super.onResume()
+        LogUtil.e("onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LogUtil.e("onPause")
+    }
     @SuppressLint("SetTextI18n")
     @OptIn(ExperimentalStdlibApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +66,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         etParse = findViewById(R.id.et_parse)
         viewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
         viewModel.usbOperationError.observe(this) {
+            LogUtil.e(it.toString())
             when (it) {
                 is Error.NoDeviceFoundError -> showMessage(getString(R.string.error_no_device))
                 is Error.UsbConnectionError -> showMessage(getString(R.string.error_no_connection))
@@ -86,12 +96,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     val v2 = it[10].toInt()
                     val v3 = it[11].toInt()
                     val v4 = it[12].toInt()
-                    etParse?.setText("${v.toChar()} v$v1.$v2.$v3.$v4")
+                    etParse?.setText("${v.toChar()} v$v4.$v3.$v2.$v1")
                 }
             }
         }
 
-        tv0.setOnClickListener { viewModel.connect() }
+        tv0.setOnClickListener {
+            viewModel.connect()
+        }
 
         for (i in 0..54) {
             end[i] = 0x00.toByte()
@@ -111,7 +123,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         val tv5 = findViewById<TextView>(R.id.tv5)
         tv5.setOnClickListener {
             if (ticker != null) {
-                tv5.text = "获取实时数据"
+                tv5.text = getString(R.string.get_device_data)
                 ticker?.cancel()
                 ticker = null
                 launchWhenResumed {
@@ -134,7 +146,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     }
                 }
             } else {
-                tv5.text = "停止获取实时数据"
+                tv5.text = getString(R.string.stop_get_device_data)
                 recordList.clear()
                 getRealData()
             }
@@ -296,7 +308,7 @@ inline fun LifecycleOwner.launchWhenResumed(
 ) {
     lifecycleScope.launch {
         var retryCount = 0
-        repeatOnLifecycle(Lifecycle.State.RESUMED) {
+        repeatOnLifecycle(Lifecycle.State.CREATED) {  //保持一直发送命令
             try {
                 block()
                 this@launch.cancel()

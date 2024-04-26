@@ -9,6 +9,7 @@
     <string name="error_read_report">Read report error</string>
 
     <string name="connected">Device connected</string>
+    <string name="connecting">Device to connect</string>
     <string name="disconnected">Device disconnected</string>
     <string name="not_found">Device not found</string>
     <string name="permission_denied">Permission denied by user</string>
@@ -18,4 +19,7 @@
     <string name="Pi">Pi</string>
     <string name="Status">Status</string>
     <string name="share">Share</string>
+    <string name="get_device_info">Get device info</string>
+    <string name="get_device_data">Get real data</string>
+    <string name="stop_get_device_data">Stop get real data</string>
 </resources>
