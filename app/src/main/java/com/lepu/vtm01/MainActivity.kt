@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     @OptIn(ObsoleteCoroutinesApi::class)
     private fun getRealData() {
-        ticker = ticker(250L, 0)
+        ticker = ticker(1000L, 0)
         launchWhenResumed {
             for (event in ticker!!) {
                 if (connected) {
