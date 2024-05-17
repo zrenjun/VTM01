@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.lepu.vtm01.type.Error
+import com.tencent.bugly.crashreport.CrashReport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private val end = ByteArray(55)
     private var pkgNo = 0
     private var etParse: EditText? = null
-    private val recordList = ArrayList<ArrayList<String>>()
+    private val recordList = ArrayList<ArrayList<String>>(3600 * 10)
     override fun onResume() {
         super.onResume()
         LogUtil.e("onResume")
@@ -58,10 +59,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         super.onPause()
         LogUtil.e("onPause")
     }
+
     @SuppressLint("SetTextI18n")
     @OptIn(ExperimentalStdlibApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        CrashReport.initCrashReport(applicationContext, "cb72183979", false)
         //屏幕常亮
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         LogUtil.init(this)
@@ -93,7 +96,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             } else {
                 //3f a5 e1 1e 01 00 3c00  41 02020001 00010000 324130313030303005000042160a01e4070609111e000002000000000a303030303030303031320000000000000000
                 //0500000000df00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-                if (it[2] == 0xE1.toByte() && it[3] == 0x1E.toByte()){
+                if (it[2] == 0xE1.toByte() && it[3] == 0x1E.toByte()) {
                     val v = it[8].toInt()
                     val v1 = it[9].toInt()
                     val v2 = it[10].toInt()
@@ -184,7 +187,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
         }
     }
-
 
 
     @SuppressLint("SetTextI18n")
