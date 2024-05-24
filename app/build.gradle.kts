@@ -1,3 +1,7 @@
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.TimeZone
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -11,12 +15,11 @@ android {
         applicationId = "com.lepu.vtm01"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
         vectorDrawables {
             useSupportLibrary = true
         }
-
     }
 
     signingConfigs {
@@ -56,6 +59,19 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    applicationVariants.all {
+        val variant = this
+        variant.outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val dateFormat = SimpleDateFormat("yyyyMMddHHmm")
+                dateFormat.timeZone = TimeZone.getTimeZone("Asia/Shanghai")
+                val date=dateFormat.format(Date())
+                val outputFileName = "VTMO1-${variant.baseName}-${variant.versionName}-${variant.versionCode}-${date}.apk"
+                output.outputFileName = outputFileName
+            }
+    }
 }
 
 dependencies {
@@ -74,4 +90,6 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.bugly)
+    implementation(libs.stream)
+    implementation(libs.stream.file)
 }

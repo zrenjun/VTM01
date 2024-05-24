@@ -26,6 +26,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.lepu.vtm01.type.Error
 import com.tencent.bugly.crashreport.CrashReport
+import io.getstream.log.android.file.StreamLogFileManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -89,7 +90,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
         val et = findViewById<EditText>(R.id.et)
         viewModel.usbOperationRead.observe(this) {
-            LogUtil.e(it.toHexString())
             et.setText("${if (et.text.toString().length < 64 * 10) et.text else ""}\n\n${it.toHexString()}")
             if (ticker != null) { //实时
                 parseReal(it)
@@ -157,6 +157,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 getRealData()
             }
         }
+        tv5.setOnLongClickListener {
+            StreamLogFileManager.share()
+            true
+        }
     }
 
     private fun showMessage(message: String) {
@@ -209,7 +213,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 val beanList = ArrayList<String>()
                 beanList.add(System.currentTimeMillis().toDateString())
                 val data = byteArray.copyOfRange(8, 13)
-                LogUtil.e(data.toHexString())
                 val spo2 = data[0].toInt()
                 beanList.add("$spo2")
                 val pr = data[1].toInt()

@@ -48,7 +48,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private var ticker: ReceiveChannel<Unit>? = null
     init {
-        ticker = ticker( 10L, 0)
+        ticker = ticker( 100L, 0)
     }
     private fun handleConnect(success: Empty) {
         viewModelScope.launch {
@@ -61,7 +61,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         usbOperationSuccess.postValue(success)
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private fun handleRead(byteArray: ByteArray) {
+        LogUtil.e(byteArray.copyOfRange(0, 9).toHexString())
         if (byteArray[0] != 0x00.toByte()) {
             usbOperationRead.postValue(byteArray)
         }
