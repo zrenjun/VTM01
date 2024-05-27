@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Vector
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -23,7 +24,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setCmd(byteArray: ByteArray) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
                 customDevice.setCmd(byteArray).handle(::handleError, ::handleCmd)
             }
         }
@@ -47,12 +48,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     private var ticker: ReceiveChannel<Unit>? = null
+
     init {
-        ticker = ticker( 100L, 0)
+        ticker = ticker(100L, 0)
     }
+
     private fun handleConnect(success: Empty) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
                 for (event in ticker!!) {
                     customDevice.receive().handle(::handleError, ::handleRead)
                 }
@@ -61,11 +64,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         usbOperationSuccess.postValue(success)
     }
 
+    private var mReceiveBuffer = Vector<Byte>()
+
     @OptIn(ExperimentalStdlibApi::class)
     private fun handleRead(byteArray: ByteArray) {
-        LogUtil.e(byteArray.copyOfRange(0, 9).toHexString())
+        LogUtil.e(byteArray.copyOfRange(1,13).toHexString())
         if (byteArray[0] != 0x00.toByte()) {
-            usbOperationRead.postValue(byteArray)
+            byteArray.copyOfRange(1, byteArray[0].toInt() + 1).forEach {
+                mReceiveBuffer.add(it)
+            }
+            if (mReceiveBuffer[0] == 0xa5.toByte()) {
+                if (mReceiveBuffer.size >= 12){
+                    usbOperationRead.postValue(mReceiveBuffer.toByteArray().copyOfRange(0, 12))
+                    mReceiveBuffer.clear()
+                }
+            }else{
+                mReceiveBuffer.clear()
+            }
         }
     }
 

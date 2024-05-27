@@ -42,6 +42,7 @@ import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Date
 import java.util.Locale
+import kotlin.experimental.inv
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
@@ -90,18 +91,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
         val et = findViewById<EditText>(R.id.et)
         viewModel.usbOperationRead.observe(this) {
-            et.setText("${if (et.text.toString().length < 64 * 10) et.text else ""}\n\n${it.toHexString()}")
+            et.setText("${if (et.text.toString().length < 64) et.text else ""}\n\n${it.toHexString()}")
             if (ticker != null) { //实时
                 parseReal(it)
             } else {
-                //3f a5 e1 1e 01 00 3c00  41 02020001 00010000 324130313030303005000042160a01e4070609111e000002000000000a303030303030303031320000000000000000
-                //0500000000df00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-                if (it[2] == 0xE1.toByte() && it[3] == 0x1E.toByte()) {
-                    val v = it[8].toInt()
-                    val v1 = it[9].toInt()
-                    val v2 = it[10].toInt()
-                    val v3 = it[11].toInt()
-                    val v4 = it[12].toInt()
+                //a5 e1 1e 01 00 3c00  41 02020001 00010000
+                if (it[1] == 0xE1.toByte() && it[2] == 0x1E.toByte()) {
+                    val v = it[7].toInt()
+                    val v1 = it[8].toInt()
+                    val v2 = it[9].toInt()
+                    val v3 = it[10].toInt()
+                    val v4 = it[11].toInt()
                     etParse?.setText("${v.toChar()} v$v4.$v3.$v2.$v1")
                 }
             }
@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             if (connected) {
                 viewModel.setCmd(
                     byteArrayOf(
-                        0x08.toByte(), 0xA5.toByte(), 0xE1.toByte(), 0x1E.toByte(), 0x00.toByte(),
+                        0x08.toByte(), 0xA5.toByte(), 0xE1.toByte(), 0xE1.toByte().inv(), 0x00.toByte(),
                         getPkgNo().toByte(), 0x00.toByte(), 0x00.toByte()
                     ).getCRC() + end
                 )
@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                             0x08.toByte(),
                             0xA5.toByte(),
                             0x02.toByte(),
-                            0x20.toByte(),
+                            0xfd.toByte(),
                             0x00.toByte(),
                             getPkgNo().toByte(),
                             0x00.toByte(),
@@ -193,8 +193,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
 
-    @SuppressLint("SetTextI18n")
     @OptIn(ExperimentalStdlibApi::class)
+    @SuppressLint("SetTextI18n")
     private fun parseReal(byteArray: ByteArray) {
         //RealTimeData{
         //     RealTimeParameters para;
@@ -207,12 +207,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 //            Unsigned char pi;			//0- 200 e.g. 25 : PI = 2.5
 //            Unsigned char probe_state;	//探头状态 0:未检测到手指 1:正常测量 2:探头故障		unsigned char reserved[7];	//预留字段
 //        }
-//35 a5 02 20 01 36  2d00  62 4f00 08 01 000000000000001f006e707173747576777878797a7a7b7b7c7c7d7e7e7f8080818283838485858688000000000000000000a1
+//a5 02 fd 01 36  2d00  62 4f00 08 01
         try {
-            if (byteArray[2] == 0x02.toByte() && byteArray[3] == 0x20.toByte()) {
+            if (byteArray[1] == 0x02.toByte() && byteArray[2] == 0xfd.toByte()) {
                 val beanList = ArrayList<String>()
                 beanList.add(System.currentTimeMillis().toDateString())
-                val data = byteArray.copyOfRange(8, 13)
+                val data = byteArray.copyOfRange(7, 12)
                 val spo2 = data[0].toInt()
                 beanList.add("$spo2")
                 val pr = data[1].toInt()
