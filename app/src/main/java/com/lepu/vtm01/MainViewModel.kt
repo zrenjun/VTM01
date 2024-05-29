@@ -68,8 +68,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     @OptIn(ExperimentalStdlibApi::class)
     private fun handleRead(byteArray: ByteArray) {
-        LogUtil.e(byteArray.copyOfRange(1,13).toHexString())
         if (byteArray[0] != 0x00.toByte()) {
+            LogUtil.e(byteArray.copyOfRange(0,13).toHexString())
             byteArray.copyOfRange(1, byteArray[0].toInt() + 1).forEach {
                 mReceiveBuffer.add(it)
             }
@@ -77,6 +77,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 if (mReceiveBuffer.size >= 12){
                     usbOperationRead.postValue(mReceiveBuffer.toByteArray().copyOfRange(0, 12))
                     mReceiveBuffer.clear()
+                }else{
+                    LogUtil.e(mReceiveBuffer.toByteArray().toHexString())
                 }
             }else{
                 mReceiveBuffer.clear()

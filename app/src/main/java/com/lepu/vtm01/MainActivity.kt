@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private var pkgNo = 0
     private var etParse: EditText? = null
     private val recordList = ArrayList<ArrayList<String>>(3600 * 10)
+    private var sendSize = 0
     override fun onResume() {
         super.onResume()
         LogUtil.e("onResume")
@@ -119,8 +120,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             if (connected) {
                 viewModel.setCmd(
                     byteArrayOf(
-                        0x08.toByte(), 0xA5.toByte(), 0xE1.toByte(), 0xE1.toByte().inv(), 0x00.toByte(),
-                        getPkgNo().toByte(), 0x00.toByte(), 0x00.toByte()
+                        0x08.toByte(),
+                        0xA5.toByte(),
+                        0xE1.toByte(),
+                        0xE1.toByte().inv(),
+                        0x00.toByte(),
+                        getPkgNo().toByte(),
+                        0x00.toByte(),
+                        0x00.toByte()
                     ).getCRC() + end
                 )
             }
@@ -154,6 +161,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             } else {
                 tv5.text = getString(R.string.stop_get_device_data)
                 recordList.clear()
+                sendSize = 0
                 getRealData()
             }
         }
@@ -187,6 +195,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                             0x00.toByte()
                         ).getCRC() + end
                     )
+                    sendSize++
                 }
             }
         }
@@ -196,6 +205,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     @OptIn(ExperimentalStdlibApi::class)
     @SuppressLint("SetTextI18n")
     private fun parseReal(byteArray: ByteArray) {
+        LogUtil.e(byteArray.toHexString())
         //RealTimeData{
         //     RealTimeParameters para;
         //     unsigned short waveform_len;
@@ -208,25 +218,27 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 //            Unsigned char probe_state;	//探头状态 0:未检测到手指 1:正常测量 2:探头故障		unsigned char reserved[7];	//预留字段
 //        }
 //a5 02 fd 01 36  2d00  62 4f00 08 01
-        try {
-            if (byteArray[1] == 0x02.toByte() && byteArray[2] == 0xfd.toByte()) {
-                val beanList = ArrayList<String>()
-                beanList.add(System.currentTimeMillis().toDateString())
-                val data = byteArray.copyOfRange(7, 12)
-                val spo2 = data[0].toInt()
-                beanList.add("$spo2")
-                val pr = data[1].toInt()
-                beanList.add("$pr")
-                val pi = data[3].toInt()
-                beanList.add("$pi")
-                val state = data[4].toInt()
-                beanList.add("$state")
-                recordList.add(beanList)
-                LogUtil.e("spo2: $spo2 pr: $pr pi: $pi state: $state")
-                etParse?.setText("${if (etParse?.text.toString().length < 128) etParse?.text else ""}\n\n${"spo2: $spo2   pr: $pr   pi: $pi   state: $state"}")
+        if (byteArray[1] == 0x02.toByte() && byteArray[2] == 0xfd.toByte()) {
+            val beanList = ArrayList<String>()
+            beanList.add(System.currentTimeMillis().toDateString())
+            val data = byteArray.copyOfRange(7, 12)
+            val spo2 = data[0].toInt()
+            beanList.add("$spo2")
+            val pr = data[1].toInt()
+            beanList.add("$pr")
+            val pi = data[3].toInt()
+            beanList.add("$pi")
+            val state = data[4].toInt()
+            beanList.add("$state")
+            recordList.add(beanList)
+            LogUtil.e("spo2: $spo2 pr: $pr pi: $pi state: $state")
+            etParse?.setText("${if (etParse?.text.toString().length < 128) etParse?.text else ""}\n\n${"spo2: $spo2   pr: $pr   pi: $pi   state: $state"}")
+
+            if (sendSize != recordList.size) {
+                val tv6 = findViewById<TextView>(R.id.tv6)
+                tv6.text = "${tv6.text} \r\n发送：$sendSize  接收：${recordList.size}"
+                sendSize = recordList.size
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
