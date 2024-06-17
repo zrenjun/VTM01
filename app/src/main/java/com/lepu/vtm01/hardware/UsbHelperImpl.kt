@@ -59,11 +59,15 @@ class UsbHelperImpl(context: Context) : UsbHelper {
         val buffer = ByteBuffer.allocate(64)
         val report = ByteArray(64)
         usbConnection?.let {
-            if (inRequest.queue(buffer)) {
-                it.requestWait()
-                buffer.rewind()
-                buffer.get(report, 0, report.size)
-                buffer.clear()
+            try {
+                if (inRequest.queue(buffer)) {
+                    it.requestWait()
+                    buffer.rewind()
+                    buffer.get(report, 0, report.size)
+                    buffer.clear()
+                }
+            } catch (e: Exception) {
+                LogUtil.e(e.toString())
             }
         } ?: return Result.Failure(Error.UsbConnectionError)
         return Result.Success(report)

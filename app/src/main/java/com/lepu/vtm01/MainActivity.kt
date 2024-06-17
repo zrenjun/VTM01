@@ -222,13 +222,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             val beanList = ArrayList<String>()
             beanList.add(System.currentTimeMillis().toDateString())
             val data = byteArray.copyOfRange(7, 12)
-            val spo2 = data[0].toInt()
+            val spo2 = data[0].toInt() and 0xff
             beanList.add("$spo2")
-            val pr = data[1].toInt()
+            val pr = data[1].toInt() and 0xff
             beanList.add("$pr")
-            val pi = data[3].toInt()
+            val pi = data[3].toInt() and 0xff
             beanList.add("$pi")
-            val state = data[4].toInt()
+            val state = data[4].toInt() and 0xff
             beanList.add("$state")
             recordList.add(beanList)
             LogUtil.e("spo2: $spo2 pr: $pr pi: $pi state: $state")

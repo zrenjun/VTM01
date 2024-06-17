@@ -15,10 +15,15 @@ android {
         applicationId = "com.lepu.vtm01"
         minSdk = 24
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
         vectorDrawables {
             useSupportLibrary = true
+        }
+
+        ndk{
+            abiFilters.add("armeabi-v7a")
+            abiFilters.add("arm64-v8a")
         }
     }
 

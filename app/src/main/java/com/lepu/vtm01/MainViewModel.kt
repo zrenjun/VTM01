@@ -9,8 +9,6 @@ import com.lepu.vtm01.hardware.UsbHelperImpl
 import com.lepu.vtm01.type.Empty
 import com.lepu.vtm01.type.Error
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Vector
@@ -42,25 +40,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         usbOperationError.postValue(error)
     }
 
+
     private fun handleCmd(success: Empty) {
         usbOperationSuccess.postValue(success)
-    }
-
-
-    private var ticker: ReceiveChannel<Unit>? = null
-
-    init {
-        ticker = ticker(100L, 0)
+        mReceiveBuffer.clear()
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                customDevice.receive().handle(::handleError, ::handleRead)
+            }
+        }
     }
 
     private fun handleConnect(success: Empty) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                for (event in ticker!!) {
-                    customDevice.receive().handle(::handleError, ::handleRead)
-                }
-            }
-        }
         usbOperationSuccess.postValue(success)
     }
 
@@ -69,19 +60,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     @OptIn(ExperimentalStdlibApi::class)
     private fun handleRead(byteArray: ByteArray) {
         if (byteArray[0] != 0x00.toByte()) {
-            LogUtil.e(byteArray.copyOfRange(0,13).toHexString())
+            LogUtil.e(byteArray.copyOfRange(0, 13).toHexString())
             byteArray.copyOfRange(1, byteArray[0].toInt() + 1).forEach {
                 mReceiveBuffer.add(it)
             }
             if (mReceiveBuffer[0] == 0xa5.toByte()) {
-                if (mReceiveBuffer.size >= 12){
+                if (mReceiveBuffer.size >= 12) {
                     usbOperationRead.postValue(mReceiveBuffer.toByteArray().copyOfRange(0, 12))
                     mReceiveBuffer.clear()
-                }else{
+                } else {
                     LogUtil.e(mReceiveBuffer.toByteArray().toHexString())
+                    customDevice.receive().handle(::handleError, ::handleRead)
                 }
-            }else{
+            } else {
                 mReceiveBuffer.clear()
+                customDevice.receive().handle(::handleError, ::handleRead)
             }
         }
     }
@@ -89,6 +82,5 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         customDevice.disconnect()
-        ticker?.cancel()
     }
 }
