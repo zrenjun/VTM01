@@ -55,8 +55,9 @@ class UsbHelperImpl(context: Context) : UsbHelper {
         return Result.Success(Empty())
     }
 
+    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     override fun read(): Result<Error, ByteArray> {
-        val buffer = ByteBuffer.allocate(64)
+        var buffer = ByteBuffer.allocate(64)
         val report = ByteArray(64)
         usbConnection?.let {
             try {
@@ -65,9 +66,13 @@ class UsbHelperImpl(context: Context) : UsbHelper {
                     buffer.rewind()
                     buffer.get(report, 0, report.size)
                     buffer.clear()
+                    buffer = null
                 }
+                inRequest.cancel()
             } catch (e: Exception) {
                 LogUtil.e(e.toString())
+                close()
+                open()
             }
         } ?: return Result.Failure(Error.UsbConnectionError)
         return Result.Success(report)

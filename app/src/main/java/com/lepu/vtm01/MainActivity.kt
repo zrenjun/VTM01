@@ -231,7 +231,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             val state = data[4].toInt() and 0xff
             beanList.add("$state")
             recordList.add(beanList)
-            LogUtil.e("spo2: $spo2 pr: $pr pi: $pi state: $state")
+//            LogUtil.e("spo2: $spo2 pr: $pr pi: $pi state: $state")
             etParse?.setText("${if (etParse?.text.toString().length < 128) etParse?.text else ""}\n\n${"spo2: $spo2   pr: $pr   pi: $pi   state: $state"}")
 
             if (sendSize != recordList.size) {
