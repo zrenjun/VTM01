@@ -9,6 +9,8 @@ import com.lepu.vtm01.hardware.UsbHelperImpl
 import com.lepu.vtm01.type.Empty
 import com.lepu.vtm01.type.Error
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,12 +33,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun connect() {
         try {
-            if (customDevice.isConnected().isSuccess)
+            if (customDevice.isConnected().isSuccess){
                 customDevice.disconnect()
-            else {
+            } else {
                 customDevice.connect().handle(::handleError, ::handleConnect)
             }
         } catch (e: Exception) {
+            LogUtil.e(e.message?:"")
             e.printStackTrace()
         }
     }
@@ -49,16 +52,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun handleCmd(success: Empty) {
         usbOperationSuccess.postValue(success)
         mReceiveBuffer.clear()
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                delay(10)
-                customDevice.receive().handle(::handleError, ::handleRead)
-            }
-        }
     }
+
+    private var ticker: ReceiveChannel<Unit>? = null
+    init {
+        ticker = ticker( 10L, 0)
+    }
+
 
     private fun handleConnect(success: Empty) {
         usbOperationSuccess.postValue(success)
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                for (event in ticker!!) {
+                    customDevice.receive().handle(::handleError, ::handleRead)
+                }
+            }
+        }
     }
 
     private var mReceiveBuffer = Vector<Byte>()
@@ -83,19 +93,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     flag = mReceiveBuffer.size >= 12
                 }
             }
-            if (!flag) {
-                viewModelScope.launch {
-                    withContext(Dispatchers.IO) {
-                        delay(10)
-                        customDevice.receive().handle(::handleError, ::handleRead)
-                    }
-                }
-            }
         }
     }
 
     override fun onCleared() {
         super.onCleared()
         customDevice.disconnect()
+        ticker?.cancel()
     }
 }

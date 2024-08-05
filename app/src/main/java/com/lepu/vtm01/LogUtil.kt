@@ -136,7 +136,7 @@ object LogUtil {
             if (isSaveLog) {
                 val log = File("${context.getExternalFilesDir(null)?.path}")
                 val dir = log.listFiles()
-                if (dir != null && (dir.size > 7 || log.length() > 40 * 1024 * 1024)) {//5*4 5天  40M
+                if (dir != null && (dir.size > 7 || log.length() > 100 * 1024 * 1024)) {//5*4 5天  40M
                     //文件修改日期：递增
                     Arrays.sort(dir, object : Comparator<File> {
                         override fun compare(f1: File, f2: File): Int {

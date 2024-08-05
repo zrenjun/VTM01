@@ -2,6 +2,8 @@ package com.lepu.vtm01.hardware
 
 import android.content.Context
 import android.hardware.usb.*
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.lepu.vtm01.LogUtil
 import com.lepu.vtm01.type.Empty
 import com.lepu.vtm01.type.Result
@@ -31,7 +33,8 @@ class UsbHelperImpl(context: Context) : UsbHelper {
         val result = usbConnection?.claimInterface(usbInterface, true)
         LogUtil.e(result.toString())
         inRequest = UsbRequest()
-        inRequest.initialize(usbConnection, usbInEndpoint)
+        val flag = inRequest.initialize(usbConnection, usbInEndpoint)
+        LogUtil.e(flag.toString())
         return if (result == null || result == false) Result.Failure(Error.ClaimInterfaceError) else Result.Success(
             Empty()
         )
@@ -55,24 +58,23 @@ class UsbHelperImpl(context: Context) : UsbHelper {
         return Result.Success(Empty())
     }
 
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun read(): Result<Error, ByteArray> {
-        var buffer = ByteBuffer.allocate(64)
+        val buffer = ByteBuffer.allocate(64)
         val report = ByteArray(64)
         usbConnection?.let {
             try {
+                inRequest.cancel()
                 if (inRequest.queue(buffer)) {
                     it.requestWait()
                     buffer.rewind()
                     buffer.get(report, 0, report.size)
                     buffer.clear()
-                    buffer = null
+                } else {
+                    LogUtil.e("read 排队失败")
                 }
-                inRequest.cancel()
             } catch (e: Exception) {
                 LogUtil.e(e.toString())
-                close()
-                open()
             }
         } ?: return Result.Failure(Error.UsbConnectionError)
         return Result.Success(report)
