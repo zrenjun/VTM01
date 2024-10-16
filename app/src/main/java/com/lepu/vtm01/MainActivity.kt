@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.format.DateFormat
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -25,6 +26,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.lepu.vtm01.type.Error
+import com.lepu.vtm01.type.LepuDevice
+import com.lepu.vtm01.type.Config
+import com.lepu.vtm01.util.CmdUtil
+import com.lepu.vtm01.util.LogUtil
 import com.tencent.bugly.crashreport.CrashReport
 import io.getstream.log.android.file.StreamLogFileManager
 import kotlinx.coroutines.CoroutineScope
@@ -42,7 +47,6 @@ import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Date
 import java.util.Locale
-import kotlin.experimental.inv
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
@@ -92,20 +96,38 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
         val et = findViewById<EditText>(R.id.et)
         viewModel.usbOperationRead.observe(this) {
-            et.setText("${if (et.text.toString().length < 64) et.text else ""}\n\n${it.toHexString()}")
-            if (ticker != null) { //实时
-                parseReal(it)
-            } else {
-                //a5 e1 1e 01 00 3c00  41 02020001 00010000
-                if (it[1] == 0xE1.toByte() && it[2] == 0x1E.toByte()) {
-                    val v = it[7].toInt()
-                    val v1 = it[8].toInt()
-                    val v2 = it[9].toInt()
-                    val v3 = it[10].toInt()
-                    val v4 = it[11].toInt()
-                    etParse?.setText("${v.toChar()} v$v4.$v3.$v2.$v1")
+//            et.setText("${if (et.text.toString().length < 64) et.text else ""}\n\n${it.toHexString()}")
+//            if (ticker != null) { //实时
+//                parseReal(it)
+//            } else {
+//                //a5 e1 1e 01 00 3c00  41 02020001 00010000
+//                if (it[1] == 0xE1.toByte() && it[2] == 0x1E.toByte()) {
+//                    val v = it[7].toInt()
+//                    val v1 = it[8].toInt()
+//                    val v2 = it[9].toInt()
+//                    val v3 = it[10].toInt()
+//                    val v4 = it[11].toInt()
+//                    etParse?.setText("${v.toChar()} v$v4.$v3.$v2.$v1")
+//                }
+//            }
+
+            when (it.type) {
+                CmdUtil.RT_DATA -> {
+                    if (ticker != null) { //实时
+                        parseReal(it.data as ByteArray)
+                    }
+                }
+                CmdUtil.GET_INFO -> {
+                    val data = it.data as LepuDevice
+                    etParse?.setText("${data.hwV} ${data.fwV}")
+
+                }
+                CmdUtil.GET_CONFIG -> {
+                    val data = it.data as Config
+                    findViewById<EditText>(R.id.avg_time).setText("${data.algAvgTime}")
                 }
             }
+
         }
 
         tv0.setOnClickListener {
@@ -115,21 +137,46 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         for (i in 0..54) {
             end[i] = 0x00.toByte()
         }
+        //回显
+        findViewById<TextView>(R.id.tv_echo).setOnClickListener {
+            if (connected) {
+                val data = CmdUtil.echo(byteArrayOf(
+                    0x01.toByte(),
+                    0x02.toByte(),
+                    0x03.toByte(),
+                    0x04.toByte(),
+                    0x05.toByte(),
+                    0x06.toByte(),
+                    0x07.toByte(),
+                    0x08.toByte(),
+                    0x09.toByte(),
+                    0x0A.toByte(),
+                    0x0B.toByte()))
+                viewModel.setCmd(data)
+            }
+        }
         //获取设备信息
         findViewById<TextView>(R.id.tv1).setOnClickListener {
             if (connected) {
-                viewModel.setCmd(
-                    byteArrayOf(
-                        0x08.toByte(),
-                        0xA5.toByte(),
-                        0xE1.toByte(),
-                        0xE1.toByte().inv(),
-                        0x00.toByte(),
-                        getPkgNo().toByte(),
-                        0x00.toByte(),
-                        0x00.toByte()
-                    ).getCRC() + end
-                )
+                val data = CmdUtil.getInfo()
+                viewModel.setCmd(data)
+            }
+        }
+        //获取设备配置
+        findViewById<TextView>(R.id.get_config).setOnClickListener {
+            if (connected) {
+                val data = CmdUtil.getConfig()
+                viewModel.setCmd(data)
+            }
+        }
+        //配置设备信息
+        findViewById<Button>(R.id.set_config).setOnClickListener {
+            if (connected) {
+                val config = Config()
+                config.type = 13
+                config.algAvgTime = findViewById<EditText>(R.id.avg_time).text.toString().toInt()
+                val data = CmdUtil.setConfig(config.getDataBytes())
+                viewModel.setCmd(data)
             }
         }
         //获取实时数据
@@ -183,19 +230,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         launchWhenResumed {
             for (event in ticker!!) {
                 if (connected) {
-                    viewModel.setCmd(
-                        byteArrayOf(
-                            0x08.toByte(),
-                            0xA5.toByte(),
-                            0x02.toByte(),
-                            0xfd.toByte(),
-                            0x00.toByte(),
-                            getPkgNo().toByte(),
-                            0x00.toByte(),
-                            0x00.toByte()
-                        ).getCRC() + end
-                    )
-                    sendSize++
+                    val data = CmdUtil.getRtData()
+                    viewModel.setCmd(data)
                 }
             }
         }

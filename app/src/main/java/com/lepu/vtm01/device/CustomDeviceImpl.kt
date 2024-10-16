@@ -9,6 +9,7 @@ class CustomDeviceImpl(private val usbHelper: UsbHelper) : CustomDevice {
 
     companion object {
         const val VENDOR_ID = 0x1915
+//        const val PRODUCT_ID = 0xF33C  // O2Ring
         const val PRODUCT_ID = 0xF33F
     }
 

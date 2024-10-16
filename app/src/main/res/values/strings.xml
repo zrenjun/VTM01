@@ -19,7 +19,13 @@
     <string name="Pi">Pi</string>
     <string name="Status">Status</string>
     <string name="share">Share</string>
+    <string name="echo">Echo</string>
+    <string name="get_file_list">Get file list</string>
+    <string name="read_file">Read file</string>
+    <string name="set_time">Set time</string>
     <string name="get_device_info">Get device info</string>
+    <string name="get_config">Get config</string>
+    <string name="set_config">Set config</string>
     <string name="get_device_data">Get real data</string>
     <string name="stop_get_device_data">Stop get real data</string>
 </resources>

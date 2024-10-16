@@ -4,7 +4,7 @@ import android.content.Context
 import android.hardware.usb.*
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.lepu.vtm01.LogUtil
+import com.lepu.vtm01.util.LogUtil
 import com.lepu.vtm01.type.Empty
 import com.lepu.vtm01.type.Result
 import com.lepu.vtm01.type.Error

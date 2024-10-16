@@ -20,6 +20,18 @@
         tools:ignore="HardcodedText" />
 
     <TextView
+        android:visibility="gone"
+        android:id="@+id/tv_echo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/echo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv0"
+        tools:ignore="HardcodedText" />
+
+    <TextView
         android:id="@+id/tv1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,8 +39,37 @@
         android:layout_marginTop="16dp"
         android:text="@string/get_device_info"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv0"
+        app:layout_constraintTop_toBottomOf="@id/tv_echo"
         tools:ignore="HardcodedText" />
+    <TextView
+        android:id="@+id/get_config"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/get_config"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv1"
+        tools:ignore="HardcodedText" />
+    <RelativeLayout
+        android:id="@+id/set_config_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/get_config">
+        <EditText
+            android:id="@+id/avg_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="3-15"/>
+        <Button
+            android:id="@+id/set_config"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/set_config"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/tv5"
@@ -38,7 +79,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/get_device_data"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv1"
+        app:layout_constraintTop_toBottomOf="@id/set_config_layout"
         tools:ignore="HardcodedText" />
 
 

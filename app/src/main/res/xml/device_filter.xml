@@ -2,4 +2,5 @@
 
 <resources>
 	<usb-device vendor-id="0x1915" product-id="0xF33F" />
+	<!--<usb-device vendor-id="0x1915" product-id="0xF33C" />-->
 </resources>
